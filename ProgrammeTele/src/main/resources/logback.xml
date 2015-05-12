@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="true" scanPeriod="30 seconds">
+  <property name="LOGS_FOLDER" value="logs" />
+  <property name="LOGS_TO_COLLECT_FOLDER" value="logs-to-collect" />
+  
+  <property  name="log.pattern1"       value="%d{HH:mm:ss.SSS} %-5level [%thread][%class{0}.%method:%line][%logger{0}] %m%n" />
+  <property scope="context" name="pattern2"       value="%d{HH:mm:ss.SSS} %-5level [%thread][%logger{0}] %m%n" />
+  <property scope="context" name="pattern3"       value="%d{yyyy/MM/dd HH:mm:ss.SSS,Europe/Paris} [%thread] %-5level - %logger{36} - %m%n" />
+  <property scope="context" name="pattern_log"    value="%d{yyyy/MM/dd HH:mm:ss,SSS} [%thread] %-5level %logger{36} - %m %throwable{0}%n" />
+  <property scope="context" name="pattern_audit"  value="%m %throwable{0}%n" />
+  <property scope="context" name="pattern_stdout" value="%d{HH:mm:ss.SSS, Europe/Paris} %highlight(%-5level) [%thread][%logger{0}] : %m%n" />
+  <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>true</withJansi>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+        <level>DEBUG</level>
+    </filter>
+    <encoder>
+      <charset>utf-8</charset>
+      <pattern>${pattern_stdout}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="SQLROLLINGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+     <file>${LOGS_FOLDER}/sql_${weblogic.Name}.log</file>
+     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+        <fileNamePattern>${LOGS_TO_COLLECT_FOLDER}/sql_${weblogic.Name}.%i.log.zip</fileNamePattern>
+        <minIndex>1</minIndex>
+        <maxIndex>5</maxIndex>
+     </rollingPolicy>
+     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+        <maxFileSize>50MB</maxFileSize>
+     </triggeringPolicy>
+     <encoder>
+        <pattern>${pattern2}</pattern>
+     </encoder>
+  </appender> 
+
+
+  <appender name="log-file"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOGS_FOLDER}/application.log</file>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>WARN</level>
+    </filter>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOGS_TO_COLLECT_FOLDER}/application.%d{yyyyMMdd}.log
+      </fileNamePattern>
+    </rollingPolicy>
+    <encoder>
+      <pattern>${pattern_log}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="audit-file"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOGS_FOLDER}/audit.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOGS_TO_COLLECT_FOLDER}/audit.%d{yyyyMMdd}.log.gzip
+      </fileNamePattern>
+    </rollingPolicy>
+    <encoder>
+      <pattern>${pattern_audit}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="troubleshooting-file"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOGS_FOLDER}/troubleshooting.log</file>
+    <append>false</append>
+    <!-- <immediateFlush>true</immediateFlush>  -->
+    <rollingPolicy
+      class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${LOGS_FOLDER}/troubleshooting.%i.log
+      </fileNamePattern>
+      <maxIndex>10</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy
+      class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <charset>UTF-8</charset> 
+      <pattern>${log.pattern1}</pattern>
+      <outputPatternAsHeader>false</outputPatternAsHeader>
+    </encoder>
+  </appender>
+
+  <!--  for lilith -->
+  <!-- 
+  <appender name="LogbackClassic" class="ch.qos.logback.classic.net.SocketAppender">
+    <RemoteHost>localhost</RemoteHost>
+    <Port>4560</Port>
+    <ReconnectionDelay>170</ReconnectionDelay>
+    <IncludeCallerData>true</IncludeCallerData>
+  </appender>
+ -->
+
+  <!-- additivity=false : empeche les parents de recevoir le log  -->
+
+  <logger name="org.hibernate.SQL" additivity="false">
+    <level value="DEBUG" />
+    <appender-ref ref="SQLROLLINGFILE" />
+  </logger>
+  <logger name="org.hibernate.type" additivity="false">
+    <level value="TRACE" />
+    <appender-ref ref="SQLROLLINGFILE" />
+  </logger>
+
+
+  <logger name="fr.manastria" additivity="false">
+    <level value="TRACE" />
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="troubleshooting-file" />
+  </logger>
+
+  <root>
+    <level value="OFF" />
+    <appender-ref ref="STDOUT"/>
+  </root>
+</configuration>
