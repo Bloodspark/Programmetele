@@ -10,5 +10,8 @@ package fr.manastria.programmetele;
  * @author Sylvain
  */
 public class Fiction extends Emission {
+    int anneeRealisation;
+    String nomRealisateur;
+    boolean rediffusion = false;
     
 }

@@ -10,5 +10,5 @@ package fr.manastria.programmetele;
  * @author Sylvain
  */
 public class Reportage extends Emission {
-
+    
 }
