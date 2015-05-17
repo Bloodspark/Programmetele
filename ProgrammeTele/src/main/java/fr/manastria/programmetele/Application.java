@@ -180,25 +180,24 @@ public class Application
 
                for (index1=0; index1<24; index1++)
                    {
-                   hit = 0;
-                   for ( index2=0 ; index2<nbEmissions; index2++) // Boucle sur les heures de la journée 0h-23h
-                   {   
-                       // Recherche du programme présent à l'heure donnée
-                       if (prgTV[index2].ProgrammeHeure(index1))
-                       // Affichage du programme trouvé
-                       { prgTV[index2].AfficherLigne(index1);
-                         hit =1;
-                       }
-                   }
-                   // Si aucun programme trouvé, on affiche "rien" dans la grille
-                   if (hit==0) System.out.println(index1+"h\t:\trien");
-
+                        hit = 0;
+                        for ( index2=0 ; index2<nbEmissions; index2++) // Boucle sur les heures de la journée 0h-23h
+                        {   
+                            // Recherche du programme présent à l'heure donnée
+                            if (prgTV[index2].ProgrammeHeure(index1))
+                            // Affichage du programme trouvé
+                            { prgTV[index2].AfficherLigne(index1);
+                              hit =1;
+                            }
+                        }
+                        // Si aucun programme trouvé, on affiche "rien" dans la grille
+                        if (hit==0) 
+                            System.out.println(index1+"h\t:\trien");
                    } 
                //Ecriture dans le fichier de Log
                fw.write ("INFO  :"+dateFormat1.format(date1)+": Fermeture du programme\r\n");
                // fermeture du fichier de Log
                fw.close();
-           
            
             } // sequence try/catch pour pouvoir gérer les ecritures sur le fichier de Log
             catch(IOException e) 
